@@ -11,13 +11,14 @@ class PostList extends Component
      *
      * @return void
      */
-
+    public $name="홍길동";
+    public $posts;
 
 
 
     public function __construct($posts)
     {
-        //
+        $this->posts = $posts;
     }
 
     /**
@@ -27,6 +28,6 @@ class PostList extends Component
      */
     public function render()
     {
-        return view('components.post-list', ['posts'=>$this->posts]);
+        return view('components.post-list');
     }
 }

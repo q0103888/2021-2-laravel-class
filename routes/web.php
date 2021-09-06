@@ -3,7 +3,6 @@
 use App\Http\Controllers\PostsController;
 use Illuminate\Support\Facades\Route;
 
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,22 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::resource('/posts', PostsController::class)->middleware(['auth']);
+
+// Route::get('/posts', [PostsController::class, "index"])
+//     ->name('posts.index'11);
+// Route::Post('/posts', [PostsController::class, "store"])
+//     ->name('posts.index');
+
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
 
-// view가 의미하는것을 해당 사이트의 정보를 전달(랜더링)해라 라는 뜻
-
-Route::get('/layout', function () {
-    return view('layouts.app');
-});
-
-Route::get('/hello', function () {
-    return view('hello');
-});
-
-// Route::get('/posts', [PostsController::class, 'index']);
-// Route::get('/create', [PostsController::class, 'create']);
-// Route::get('/store', [PostsController::class, 'store']);
-
-Route::resource('/posts', PostsController::class);
+require __DIR__.'/auth.php';
