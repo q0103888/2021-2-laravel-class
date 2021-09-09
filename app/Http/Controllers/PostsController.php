@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class PostsController extends Controller
 {
@@ -30,7 +33,8 @@ class PostsController extends Controller
      */
     public function create()
     {
-        //
+        return view('bbs.create');
+
     }
 
     /**
@@ -41,7 +45,12 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = array_marge($request->all(),
+            ["user_id"=>Auth::user()->id]);
+
+        Post::create($input);
+
+        return redirect()->route('posts.index');
     }
 
     /**
