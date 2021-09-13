@@ -21,7 +21,15 @@ class PostsController extends Controller
             1. 게시글 리스트를 DB에서 읽어온다
             2. 게시글 목록을 만들어주는 blade에 읽어온 데이터를 표시
         */
-        $posts = Post::all();
+
+        // select * from posts
+       // $posts = Post::all();
+        //$posts = Post::orderBy('created_at', 'desc')->get();
+
+        //$posts = Post::latest()->get();
+        //$posts = Post::oldest()->get();
+
+        $posts = Post::latest()->paginate(10);
         //dd($posts);
         return view('bbs.index', ['posts'=>$posts]);
     }
@@ -35,7 +43,7 @@ class PostsController extends Controller
     {
         return view('bbs.create');
 
-    }
+}
 
     /**
      * Store a newly created resource in storage.
@@ -45,10 +53,35 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        $input = array_marge($request->all(),
+        $this->validate($request, ['title'=>'required',
+                                    'content'=>'required|min:3']);
+        $fillName = null;
+        if($request->hasFile('image'))
+           //dd($request->file('image'));
+            $path = $request->file('image')
+                ->storeAs('public/images', $request->file('image')->getClientOriginalName());
+                //dd($path);
+
+        $input = array_merge($request->all(),
             ["user_id"=>Auth::user()->id]);
 
+            // mass assignment
+            // eloquent model의 white list인 $fillable에 기술해야 한다.
+        if($path) {
+            //dd($path,':'.strrpos($path, '/'));
+            $path = substr($path, strrpos($path, '/')+1);
+            //dd($path);
+            $path = time().'_'.$path;
+
+            $input = array_merge($input, ['image' => $path]);
+            dd($input);
+        }
+            
         Post::create($input);
+
+        // $post = new Post;
+        // $post->title = $input['title'];
+        // $post->content = $input['content'];
 
         return redirect()->route('posts.index');
     }
