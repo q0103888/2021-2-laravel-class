@@ -53,38 +53,58 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['title'=>'required',
-                                    'content'=>'required|min:3']);
-        $fillName = null;
-        if($request->hasFile('image'))
-           //dd($request->file('image'));
-            $path = $request->file('image')
-                ->storeAs('public/images', $request->file('image')->getClientOriginalName());
-                //dd($path);
+        $this->validate($request, ['title'=>'required', 
+                        'content'=>'required|min:3']);
+        
+        $fileName = null;
+        if($request->hasFile('image')) {
+            // dd($request->file('image'));
+            $fileName = time().'_'.
+                $request->file('image')->getClientOriginalName();
+            $path = $request->file('image')  
+                ->storeAs('public/images', $fileName);
+            // dd($path);
+        }                       
+        //
+        // dd($request->all());
+        $input = array_merge($request->all(), 
+                ["user_id"=>Auth::user()->id]);
+        // 이미지가 있으면.. $input에 image 항목 추가
+        if($fileName) {
 
-        $input = array_merge($request->all(),
-            ["user_id"=>Auth::user()->id]);
-
-            // mass assignment
-            // eloquent model의 white list인 $fillable에 기술해야 한다.
-        if($path) {
-            //dd($path,':'.strrpos($path, '/'));
-            $path = substr($path, strrpos($path, '/')+1);
-            //dd($path);
-            $path = time().'_'.$path;
-
-            $input = array_merge($input, ['image' => $path]);
-            dd($input);
+            $input = array_merge($input, ['image' => $fileName]);
+            // dd($input);
         }
-            
+         /*
+            $request->all() : ['title'=>'dfakl', 'content'=>'cdkd']
+            ["user_id"=>Auth::user()->id] => ['user_id'=>1]
+        arrary_merge(['title'=>'dfakl', 'content'=>'cdkd'], 
+                            ['user_id'=>1])
+
+         */
+        // dd($input);
+        /*
+            $input의 내용은 
+                ["title"=>"dasjfl", "content=>"cdajl", "user_id"=>1]
+
+        */
+
+        // mass assignment 
+        // Eloquent model의 white list 인 $fillable에 기술해야 한다.
         Post::create($input);
 
         // $post = new Post;
         // $post->title = $input['title'];
         // $post->content = $input['content'];
 
+        // ... 
+
+        // $post->save();
+        
+        // return view('bbs.index', ['posts'=>Post::all()]);
         return redirect()->route('posts.index');
     }
+
 
     /**
      * Display the specified resource.
@@ -94,7 +114,9 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        //
+        // $id에 해당하는 Post를 DB에서 인출하고 그 것을 상세보기 뷰로 전달한다.
+        $post = Post::find($id);
+        return view('bbs.show', ['post'=>$post]);
     }
 
     /**
