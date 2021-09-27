@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
+
 
 class PostsController extends Controller
 {
@@ -150,10 +152,32 @@ class PostsController extends Controller
         $post->title = $request->title;
         $post->content = $request->content;
 
+        //이 이미지를 이 게시글의 이미지로 변경하겠다는 의미.
+        if($request->image) {
+            //이 이미지를 이 게시글의 이미지로 파일 시스템에
+            // 저장하고, DB에 반영하기 전에
+            // 기존 이미지가 있다면
+            // 그 이미지를 파일 시스템에서 삭제해줘야 한다.
+            if($post->image) {
+                Storage::delete('public/images/'.$post->image);
+            }
+            $fileName = time().'_'.
+                $request->file('image')->getClientOriginalName();
+                $post->image = $fileName;
+                $request->image->storeAs('public/image', $fileName);
+        }
         $post->save();
+        /* update posts set title = $request->title,
+                        content = $request->content,
+                        image = $fileName
+                        updated_at = now(),
+            where id = $id;
+        */
+
 
         // $post->update(['title'=>$request->title,
         //                     'content'=>$request->content]);
+        return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
     /**
@@ -166,7 +190,25 @@ class PostsController extends Controller
     {
         //DI, Dependency Injection, 의존성 주입
         //dd($request);
-        Post::find($id)->delete();
+        $post = Post::find($id);
+
+        //게시글에 딸린 이미지가 있으면 파일시스템에서도 삭제해줘야함
+        if($post->image) {
+            Storage::delete('public/images/'.$post->image); 
+        }
+        
+        $post->delete();
+
         return redirect()->route('posts.index');
+    }
+
+    public function deleteImage($id) {
+        $post = Post::find($id);
+        // dd($post);
+        Storage::delete('public/images', $post->image);
+        $post->image = null;
+        $post->save();
+
+        return redirect()->route('posts.edit', ['post'=>$post->id]);
     }
 }
