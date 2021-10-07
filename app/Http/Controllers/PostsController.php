@@ -64,7 +64,7 @@ class PostsController extends Controller
             $fileName = time().'_'.
                 $request->file('image')->getClientOriginalName();
             $path = $request->file('image')  
-                ->storeAs('public/images', $fileName);
+                ->storeAs('public/image', $fileName);
             // dd($path);
         }                       
         //
