@@ -32,5 +32,29 @@
                 {{ $slot }}
             </main>
         </div>
+        <script>
+            function confirmDelete(e) {
+              myform = document.getElementById('form');
+              flag = confirm('정말 삭제하시겠습니까?');
+              if (flag) {
+                // 서브밋...
+                myform.submit();
+              }
+              // e.preventDefault(); // form이 서버로 전달되는 것을 막아준다.
+            }
+
+            function deleteImage(id) {
+                // alert('Hi~');
+                editForm = document.getElementById('editForm');
+                // editForm.delete('_method');
+                editForm._method.value = 'delete';
+                editForm.action = '/posts/images/'+id;
+                editForm.submit();
+                // confirm('hello?');
+                return false;
+            }
+          </script>
+
+
     </body>
 </html>

@@ -1,13 +1,3 @@
-메일함으로 바로가기본문으로 바로가기
-사용자 링크
-내 프로필 이미지 이현호내정보 보기
-알림
-서비스 더보기
- 
-메일검색
- edit 
-2021-09-27 (월) 20:00
-
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between">
@@ -52,7 +42,7 @@
                 <div class="flex">
                     <img class="w-20 h-20 rounded-full" src="{{'/storage/images/'.$post->image }}"
                     class="card-img-top" alt="my post image">
-                    <button onclick="return deleteImage()" class="btn btn-danger  h-10 mx-2 my-2">이미지 삭제</button>
+                    <button onclick="return deleteImage({{ $post->id }})" class="btn btn-danger  h-10 mx-2 my-2">이미지 삭제</button>
                 </div>
                 @else
                     <span>첨부 이미지 없음</span>
@@ -66,20 +56,6 @@
             <button type="submit" class="btn btn-primary">글수정</button>
             </div>
         </form>
-        <script>
-            function deleteImage() {
-                // alert('Hi~');
-                editForm = document.getElementById('editForm');
-                // editForm.delete('_method');
-                editForm._method.value = 'delete';
-                editForm.action = '/posts/images/{{ $post->id }}';
-                editForm.submit();
-                // confirm('hello?');
-                return false;
-            }
-        </script>
+
     </div>
 </x-app-layout>
-
-맨위로
-
