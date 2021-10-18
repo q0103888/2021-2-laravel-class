@@ -104,7 +104,7 @@ class PostsController extends Controller
         // $post->save();
         
         // return view('bbs.index', ['posts'=>Post::all()]);
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')->with('success', 'ture');
     }
 
 
@@ -116,8 +116,10 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        // $id에 해당하는 Post를 DB에서 인출하고 그 것을 상세보기 뷰로 전달한다.
-        $post = Post::find($id);
+         // $id에 해당하는 Post를 데이터베이스에서 인출
+        // eager loading (즉시 로딩)
+        $post = Post::with('likes')->find($id);
+        // 그 놈을 상세보기 뷰로 전달한다.
         return view('bbs.show', ['post'=>$post]);
     }
 
