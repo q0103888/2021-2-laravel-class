@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
-use Illuminate\Http\Request;
 use App\Models\Comment;
+use App\Models\Post;
+use Egulias\EmailValidator\Warning\Comment as WarningComment;
+use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
@@ -23,7 +24,7 @@ class CommentsController extends Controller
             select * from comments where post_id = ?
             order by created_at desc;
         */
-        $comments = Comment::where('post_id', $postId)->latest();
+        $comments = Comment::where('post_id', $postId)->latest()->get();
         return $comments;
     }
 }
