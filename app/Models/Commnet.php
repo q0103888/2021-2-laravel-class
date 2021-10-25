@@ -9,6 +9,8 @@ class Commnet extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['comment', 'user_id','post_id'];
+
     /*
       user - Comment (1:N)  
     */
@@ -24,10 +26,4 @@ class Commnet extends Model
             WHERE id = this.user_id
         */
     }
-
-    protected $fillable = [
-        "comment",
-        "Created_at",
-        "user_id",
-    ];
 }
