@@ -13,3 +13,5 @@
     <x-post-show :post="$post"/>
 
 </x-app-layout>
+
+<!-- 상세보기 페이지 -->

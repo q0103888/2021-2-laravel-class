@@ -147,8 +147,8 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request, ['title'=> 'required',
-        'content'=>'required|min:3']);
+        // $this->validate($request, ['title'=> 'required',
+        // 'content'=>'required|min:3']);
 
         $post = Post::find($id);
         $post->title = $request->title;

@@ -4,5 +4,5 @@
             {{ __('Home') }}
         </h2>
     </x-slot>
-</x-post-list :posts="$posts"/>
+</x-post-list :posts="$posts">
 </x-app-layout>

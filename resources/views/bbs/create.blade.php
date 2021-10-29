@@ -7,7 +7,7 @@
           <button onclick=location.href="{{ route('posts.index') }}" type="button" class="btn btn-info hover:bg-blue-700 font-bold text-white">
               목록보기
           </button>
-      </div>
+    </div>
   </x-slot>
   <div class="m-4 p-4">
       <form class="row g-3" action="{{ route('posts.store') }}"
@@ -48,3 +48,4 @@
       </form>
   </div>
 </x-app-layout>
+<!-- posts에서 글쓰기 버튼을 실행시 포스트에 글을 등록할 수 있는 곳 -->

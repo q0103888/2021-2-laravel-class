@@ -13,3 +13,5 @@
     <x-posts-list :posts="$posts" />
 </x-app-layout>
 <!--앞에 x가 있으먄 블레이드 컴포넌트이다-->
+<!--여기는 대쉬보드에서 index를 누르면 실행되는 posts이다. -->
+
