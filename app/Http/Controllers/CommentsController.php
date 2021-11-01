@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
-use App\Models\Commnet;
 use App\Models\Post;
 use Egulias\EmailValidator\Warning\Comment as WarningComment;
 use Illuminate\Http\Request;
@@ -78,7 +77,7 @@ class CommentsController extends Controller
         */
         
         // select from comments where id = ?
-        $comment = Commnet::find($comment_id);
+        $comment = Comment::find($comment_id);
 
        // delete from comments where id = ?
         $comment->delete();

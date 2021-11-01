@@ -22,11 +22,11 @@ class CommentFactory extends Factory
     public function definition()
     {
         return [
-            'comment' => $this->faker->sentence(),
-            'user_id' => 1, 
+            'comment' => $this->faker->sentence(10),
+            'user_id' => 1,
             'post_id' => 5,
             'created_at' => now(),
-            'updated_at' => now(),
+            'updated_at' => now()
         ];
     }
 }

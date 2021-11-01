@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentsController;
 use App\Http\Controllers\LikesController;
 use App\Http\Controllers\PostsController;
 use App\Models\Commnet;
@@ -39,14 +40,16 @@ Route::post('/like/{post}', [LikesController::class, "store"])
                                 ->middleware(['auth'])->name('like.store');
 
 Route::post('/comments/{postId}', 
-            [CommentsController::class, 'stroe']);
+            [CommentsController::class, 'store']);
             
-Route::get('/comments/{postId}', 
+Route::get('/comment/{postId}', 
             [CommentsController::class, 'index']);
 
 Route::patch('/comments/{commentId}',
             [CommentsController::class, 'update']);
 
-Route::delete('/commnets/{comment_id}',
+Route::delete('/comments/{comment_id}',
                     [CommentsController::class, 'destroy']);
+
+//Route::get('/comment/{postId}', [CommentController::class,"index"])->middleware('auth')->name('comment.index');
 require __DIR__.'/auth.php';
