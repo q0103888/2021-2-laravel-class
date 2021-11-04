@@ -1,16 +1,28 @@
 <template>
     <div>
+        <label class="block text-left" style="max-width: 400px">
+            <span class="text-gray-700">Textarea</span>
+                <textarea
+                    class="form-textarea mt-1 block w-full"
+                    rows="3"
+                    placeholder="Enter some long form content."
+                ></textarea>
+            </label>
         <button @click="getComments" class="btn btn-default">댓글 불러오기</button>
-        <comment-item v-for="(comment, index) in comments"
+        <comment-item v-for="(comment, index) in comments.data"
                 :key="index" :comment="comment"/>
+
+        <pagination @pageClicked="getPage($event)" 
+            v-if="comments.links != null" :links="comments.links"/>
     </div>
 </template>
 
 <script>
 import CommentItem from './CommentItem.vue';
+import Pagination from './Pagination.vue';
 export default {
     props: ['post', 'loginuser'],
-    components: {CommentItem},
+    components: {CommentItem, Pagination},
     data() {
         return {
             comments : [],
@@ -18,6 +30,31 @@ export default {
     },
 
     methods: {
+        addComment(){
+            if(this.newComment == '') {
+                alert('한자라도 쓰자...');
+                return;
+            }
+            axios.post('/comments/'+this.post.id, 
+                    {'comment':this.comments})
+                    .then(response=>{
+                        console.log(response.data);
+
+                        this.getComments();
+                        this.newComment='';
+                    })
+                    .catch(error=>{console.log(error)})
+        },
+
+        getPage(url) {
+            console.log(url);
+            axios.get(url)
+                .then(response=> {
+                this.comments = response.data;})
+                .catch(error=>{
+                console.log(error);
+            });
+        },
         getComments() {
             // this.comments=['1st comment', '2nd comment',
             //     '3rd comment', '4th comment', '5th comment'];
@@ -25,7 +62,7 @@ export default {
             // 즉, axios를 이용해서 요청
             // 서버가 댓글 리스트를 주면 그놈을 어디에 할당해?
             // this.comments에 할당.    
-            axios.get('/comments'+this.post.id)
+            axios.get('/comments/'+this.post.id)
             .then(response=> {
                 this.comments = response.data;
             }).catch(error=>{
