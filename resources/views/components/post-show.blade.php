@@ -25,7 +25,11 @@
         <li class="list-group-item">작성자: {{ $post->writer->name }}</li>
       </ul>
       <div class="card-body flex">
+        @can
         <a href="{{ route('posts.edit', ['post'=>$post->id]) }}" class="card-link">수정하기</a>
+        @endcan
+
+        @can('delete',$post)
         <form id="form" class="ml-4" method="post"
             onsubmit="event.preventDefault(); confirmDelete(event)"
             action="{{ route('posts.destroy', ['post'=>$post->id]) }}">
@@ -34,6 +38,7 @@
           {{-- <input type="hidden" name="_method" value="delete"> --}}
           <button type="submit">삭제하기</button>
         </form>
+        @endcan
       </div>
     </div>
 
