@@ -15,9 +15,15 @@
                       <small>{{ comment.user.name }}</small>
                     </a>
                 </div>
-                <div class="text-xs">
-                    {{ comment.comment }}
+                <div class="text-xs" id="commenet">
+                    {{ comment.user.name }}
                 </div>
+
+                <small
+                  v-show="updateClicked"
+                  @click="updateComment"
+                  class="px-2 hover:bg-blue-400">save</small>
+
                 </div>
                 <div class="self-stretch flex justify-center items-center transform transition-opacity duration-200 opacity-0 hover:opacity-100">
                     <a href="#" class="">
@@ -31,12 +37,14 @@
             <div class="flex justify-start items-center text-xs w-full">
               <div class="font-semibold text-gray-700 px-2 flex items-center justify-center space-x-1">
                 <a href="#" class="hover:underline">
-                  <small>Like</small>
+                  <small v-if="comment.user_id">update</small>
                 </a>
                <small class="self-center">.</small>
                 <a href="#" class="hover:underline">
-                  <small>Reply</small>
-                </a>
+                 
+                  <small  
+                      class="px-2 hover:bg-blue-400">Delete</small>
+
                <small class="self-center">.</small>
                 <a href="#" class="hover:underline">
                   <small>15 hour</small>
@@ -59,5 +67,32 @@
 <script>
 export default {
     props: ['comment'],
+
+    
+
+    methods : {
+      deleteComment() {
+        if(confirm('Are you sure to delete?')) {
+            axios.delete('/comments/'+this.comment.id)
+            .then(response=>{
+              //console.log(response.data);
+              //this.$emit('deleted');
+              this.$parent.getComments();
+            })
+            .catch(error=>{
+              alert('delete failed:'+error);
+            });
+        }
+      },
+
+      enableUpdate() {
+        this.updateCliked = true;
+      },
+
+
+      updateComment() {
+        
+      }
+    },
 }
 </script>

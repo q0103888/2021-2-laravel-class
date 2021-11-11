@@ -25,7 +25,7 @@
         <li class="list-group-item">작성자: {{ $post->writer->name }}</li>
       </ul>
       <div class="card-body flex">
-        @can
+        @can('update',$post)
         <a href="{{ route('posts.edit', ['post'=>$post->id]) }}" class="card-link">수정하기</a>
         @endcan
 

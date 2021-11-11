@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 
 class PostsController extends Controller
 {
@@ -20,19 +17,19 @@ class PostsController extends Controller
     public function index()
     {
         /*
-            1. 게시글 리스트를 DB에서 읽어온다
-            2. 게시글 목록을 만들어주는 blade에 읽어온 데이터를 표시
+            1. 게시글 리스트를 DB에서 읽어와야지
+            2. 게시글 목록 만들어주는 blade 에 읽어온 데이터를 전달하고
+               실행.
         */
+        // select * from posts order by created_at desc
+        // $posts = Post::orderBy('created_at', 'desc')->get();
 
-        // select * from posts
-       // $posts = Post::all();
-        //$posts = Post::orderBy('created_at', 'desc')->get();
-
-        //$posts = Post::latest()->get();
-        //$posts = Post::oldest()->get();
+        // $posts = Post::latest()->get();
+        // $posts = Post::oldest()->get();
 
         $posts = Post::latest()->paginate(10);
-        //dd($posts);
+
+        // dd($posts);
         return view('bbs.index', ['posts'=>$posts]);
     }
 
@@ -43,9 +40,9 @@ class PostsController extends Controller
      */
     public function create()
     {
+        //
         return view('bbs.create');
-
-}
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -55,21 +52,21 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['title'=>'required', 
+        $this->validate($request, ['title'=>'required',
                         'content'=>'required|min:3']);
-        
+
         $fileName = null;
         if($request->hasFile('image')) {
             // dd($request->file('image'));
             $fileName = time().'_'.
                 $request->file('image')->getClientOriginalName();
-            $path = $request->file('image')  
+            $path = $request->file('image')
                 ->storeAs('public/images', $fileName);
             // dd($path);
-        }                       
+        }
         //
         // dd($request->all());
-        $input = array_merge($request->all(), 
+        $input = array_merge($request->all(),
                 ["user_id"=>Auth::user()->id]);
         // 이미지가 있으면.. $input에 image 항목 추가
         if($fileName) {
@@ -80,18 +77,18 @@ class PostsController extends Controller
          /*
             $request->all() : ['title'=>'dfakl', 'content'=>'cdkd']
             ["user_id"=>Auth::user()->id] => ['user_id'=>1]
-        arrary_merge(['title'=>'dfakl', 'content'=>'cdkd'], 
+        arrary_merge(['title'=>'dfakl', 'content'=>'cdkd'],
                             ['user_id'=>1])
 
          */
         // dd($input);
         /*
-            $input의 내용은 
+            $input의 내용은
                 ["title"=>"dasjfl", "content=>"cdajl", "user_id"=>1]
 
         */
 
-        // mass assignment 
+        // mass assignment
         // Eloquent model의 white list 인 $fillable에 기술해야 한다.
         Post::create($input);
 
@@ -99,14 +96,13 @@ class PostsController extends Controller
         // $post->title = $input['title'];
         // $post->content = $input['content'];
 
-        // ... 
+        // ...
 
         // $post->save();
-        
-        // return view('bbs.index', ['posts'=>Post::all()]);
-        return redirect()->route('posts.index')->with('success', 'ture');
-    }
 
+        // return view('bbs.index', ['posts'=>Post::all()]);
+        return redirect()->route('posts.index',['posts' => $input])->with('success','true');
+    }
 
     /**
      * Display the specified resource.
@@ -116,7 +112,7 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-         // $id에 해당하는 Post를 데이터베이스에서 인출
+        // $id에 해당하는 Post를 데이터베이스에서 인출
         // eager loading (즉시 로딩)
         $post = Post::with('likes')->find($id);
         // 그 놈을 상세보기 뷰로 전달한다.
@@ -129,16 +125,19 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request, $id)
+    public function edit(Request $request,$id)
     {
-        //의존성 주입
-        //DI(Denpency Injection)
+        // 의존성 주입
+        // DI(Denpency Injection)
         // $id에 해당하는 포스트를 수정할 수 있는
-        // 페이지를 반환해주면 된다
+        // 페이지를 반환해주면 된다.
+
         $post = Post::find($id);
         if ($request->user()->cannot('update', $post)) {
             abort(403);
         }
+        //  or      $this->authorize('update', $post);
+
         return view('bbs.edit', ['post'=>Post::find($id)]);
     }
 
@@ -151,16 +150,17 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $this->validate($request, ['title'=> 'required',
-        // 'content'=>'required|min:3']);
+        $this->validate($request, ['title'=>'required',
+        'content'=>'required|min:3']);
 
         $post = Post::find($id);
+        // $post->title = $request->input['title'];
         $post->title = $request->title;
         $post->content = $request->content;
-
-        //이 이미지를 이 게시글의 이미지로 변경하겠다는 의미.
+        // $request 객체 안에 이미지가 있으면,
+        // 이 이미지를 이 게시글의 이미지로 변경하겠다는 의미잖아.
         if($request->image) {
-            //이 이미지를 이 게시글의 이미지로 파일 시스템에
+            // 이 이미지를 이 게시글의 이미지로 파일 시스템에
             // 저장하고, DB에 반영하기 전에
             // 기존 이미지가 있다면
             // 그 이미지를 파일 시스템에서 삭제해줘야 한다.
@@ -169,20 +169,20 @@ class PostsController extends Controller
             }
             $fileName = time().'_'.
                 $request->file('image')->getClientOriginalName();
-                $post->image = $fileName;
-                $request->image->storeAs('public/images', $fileName);
+            $post->image = $fileName;
+            // $request->image->storeAs('publc/images/'.$fileName);
+            $request->image->storeAs('public/images', $fileName);
         }
         $post->save();
-        /* update posts set title = $request->title,
+        /* update posts set title=$request->title,
                         content = $request->content,
-                        image = $fileName
+                        image = $fileName, // <= optional
                         updated_at = now(),
             where id = $id;
         */
+        // $post->update(['title' => $request->title,
+        //             'content' => $request->content]);
 
-
-        // $post->update(['title'=>$request->title,
-        //                     'content'=>$request->content]);
         return redirect()->route('posts.show', ['post' => $post->id]);
     }
 
@@ -194,18 +194,23 @@ class PostsController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        //DI, Dependency Injection, 의존성 주입
-        //dd($request);
+        // DI, Dependency Injection, 의존성 주입
+        // dd($request);
         $post = Post::find($id);
 
-        //게시글에 딸린 이미지가 있으면 파일시스템에서도 삭제해줘야함
+
+        $this->authorize('delete', $post);
+
+
+        // 게시글에 딸린 이미지가 있으면 파일시스템에서도 삭제해줘야 한다.
         if($post->image) {
-            Storage::delete('public/images/'.$post->image); 
+            Storage::delete('public/images/'.$post->image);
         }
-        
+
         $post->delete();
 
         return redirect()->route('posts.index');
+        // ->with('delte','true')
     }
 
     public function deleteImage($id) {
@@ -218,3 +223,4 @@ class PostsController extends Controller
         return redirect()->route('posts.edit', ['post'=>$post->id]);
     }
 }
+
