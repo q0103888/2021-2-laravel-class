@@ -1,28 +1,30 @@
 <template>
 <!-- component -->
-<div x-data="{ open1: false, open2: false }">
-  <div class="w-screen bg-gray-100 flex justify-center items-center">
-    <div class="bg-white w-full sm:max-w-7xl md:w-1/3 h-auto shadow px-3 py-2 flex flex-col space-y-2">
+<div class="my-5 w-screen ">
+  <div class=" flex justify-start items-center">
+    <div class="ml-4 bg-white w-full sm:max-w-7xl md:w-2/3 h-auto shadow px-3 py-2 flex flex-col space-y-2">
 
       <div class="flex items-center space-x-2">
 
         <div class="flex items-center justify-center space-x-2">
           <div class="block">
               <div class="flex justify-center items-center space-x-2">
-                <div class="bg-gray-100 w-auto rounded-xl px-2 pb-2">
-                <div class="font-medium">
-                    <a href="#" class="hover:underline text-sm">
-                      <small>{{ comment.user.name }}</small>
-                    </a>
-                </div>
-                <div class="text-xs" id="commenet">
-                    {{ comment.user.name }}
-                </div>
-
-                <small
-                  v-show="updateClicked"
-                  @click="updateComment"
-                  class="px-2 hover:bg-blue-400">save</small>
+                <div class=" rounded-xl px-2 pb-2">
+                    <div class="font-medium">
+                        <a href="#" class="hover:underline text-sm">
+                        <small>{{ comment.user.name }}</small>
+                        </a>
+                    </div>
+                    <div class="flex">
+                        <input v-model="newComment"
+                                :readonly="!updateClicked"
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-xs"
+                                type="text">
+                        <small
+                            v-show="updateClicked"
+                            @click="updateComment"
+                            class="px-2 pt-2 hover:bg-blue-400 item-center">Save</small>
+                    </div>
 
                 </div>
                 <div class="self-stretch flex justify-center items-center transform transition-opacity duration-200 opacity-0 hover:opacity-100">
@@ -36,14 +38,14 @@
               </div>
             <div class="flex justify-start items-center text-xs w-full">
               <div class="font-semibold text-gray-700 px-2 flex items-center justify-center space-x-1">
-                <a href="#" class="hover:underline">
-                  <small v-if="comment.user_id">update</small>
-                </a>
-               <small class="self-center">.</small>
-                <a href="#" class="hover:underline">
-                 
-                  <small  
-                      class="px-2 hover:bg-blue-400">Delete</small>
+
+                <small v-if="comment.user_id==login_user_id"
+                    @click="enableUpdate"
+                    class="px-2 hover:bg-blue-400">Update</small>
+
+                <small v-if="comment.user_id==login_user_id"
+                    @click="deleteComment"
+                    class="px-2 hover:bg-blue-400">Delete</small>
 
                <small class="self-center">.</small>
                 <a href="#" class="hover:underline">
@@ -66,33 +68,77 @@
 
 <script>
 export default {
-    props: ['comment'],
-
-    
+    props: ['comment', 'login_user_id'],
+    data() {
+        return {
+            newComment:'',
+            updateClicked:false,
+        }
+    },
+    created() {
+        this.newComment = this.comment.comment;
+    },
 
     methods : {
-      deleteComment() {
-        if(confirm('Are you sure to delete?')) {
-            axios.delete('/comments/'+this.comment.id)
-            .then(response=>{
-              //console.log(response.data);
-              //this.$emit('deleted');
-              this.$parent.getComments();
+        deleteComment() {
+            if(confirm('Are you sure to delete?')) {
+                axios.delete('/comments/'+this.comment.id)
+                .then(response=>{
+                    // console.log(response.data);
+                    // this.$emit('deleted');
+                    this.$parent.getComments();
+                    Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Your Comment has been deleted',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+                })
+                .catch(error=>{
+                    alert('delete failed:' + error);
+                });
+            }
+        },
+
+        enableUpdate() {
+            this.updateClicked = true;
+        },
+
+        updateComment() {
+            if (this.newComment == '') {
+              alert('한자라도 입력하시오');
+              return;
+            }
+          // axios
+            axios.patch('/comments/'+this.comment.id,
+                {'comment' : this.newComment}
+            ).then(response => {
+              console.log(response.status);
+              console.log(response.data);
+              this.updateClicked = false;
+              //alert('댓글 수정 성공');
+              Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Your Comment has been updated',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             })
-            .catch(error=>{
-              alert('delete failed:'+error);
-            });
+            .catch(error=> {
+              console.log(error);
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Your Comment has been updated',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+              
+            })
+
         }
-      },
-
-      enableUpdate() {
-        this.updateCliked = true;
-      },
-
-
-      updateComment() {
-        
-      }
     },
 }
 </script>

@@ -19,6 +19,7 @@ class CommentPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -31,6 +32,7 @@ class CommentPolicy
     public function view(User $user, Comment $comment)
     {
         //
+        return true;
     }
 
     /**
@@ -67,7 +69,9 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment)
     {
-        //
+        if ($user->id == $comment->user_id) return true;
+
+        return false;
     }
 
     /**

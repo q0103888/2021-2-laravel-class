@@ -35,7 +35,7 @@ Route::get('/', function () {
 
 
 
-
+Route::get('/getcomments/{postId}', [CommentsController::class,"index"])->middleware('auth')->name('comment.index');
 
 Route::post('/like/{post}', [LikesController::class, "store"])
                                 ->middleware(['auth'])->name('like.store');
@@ -50,5 +50,4 @@ Route::patch('/comments/{commentId}',
 Route::delete('/comments/{comment_id}',
                     [CommentsController::class, 'destroy']);
 
-//Route::get('/comment/{postId}', [CommentController::class,"index"])->middleware('auth')->name('comment.index');
 require __DIR__.'/auth.php';

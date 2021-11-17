@@ -31,7 +31,7 @@ class Comment extends Model
     public function user() {
         // Comment 입장에서 연결된 User 를 찾을 때 belongsTo 관계 메서드 이용.
 
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id', 'users');
 
         /*
             SELECT * FROM USERS
@@ -39,7 +39,7 @@ class Comment extends Model
         */
     }
 
-    public function comments() {
-        return $this->belongsToMany(Comment::class, 'post_id')->latest()->get();
-    }
+    //public function comments() {
+        //return $this->belongsToMany(Comment::class, 'post_id')->latest()->get();
+    //}
 }

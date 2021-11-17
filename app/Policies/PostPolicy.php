@@ -19,6 +19,7 @@ class PostPolicy
     public function viewAny(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -46,6 +47,7 @@ class PostPolicy
     public function create(User $user)
     {
         //
+        return true;
     }
 
     /**
@@ -58,9 +60,9 @@ class PostPolicy
     public function update(User $user, Post $post)
     {
         // 로그인한 사용자가 게시글 작성자이면 허용
-        //dd('로그인 사용자:'.$user->id.'게시글 작성자:'.$post->$user_id);
-        //dd($user->id == $post->user_id);
-
+        // dd('로그인 사용자:' . $user->id . ', 게시글 작성자:' . $post->user_id);
+        // dd($user->id == $post->user_id);
+        // dd($user);
         return $user->id == $post->user_id;
     }
 
@@ -74,7 +76,7 @@ class PostPolicy
     public function delete(User $user, Post $post)
     {
         //로그인한 사용자가 게시글 작성자이면 허용
-        return $user->id === $post->user_id;
+        return $user->id == $post->user_id;
     }
 
     /**
